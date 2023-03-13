@@ -31,11 +31,42 @@ export class CreateAccDto {
     @IsNotEmpty()
     address: string;
 }
-export class UpdateAccDto {
-    @Length(10, 12, { message: "Length of 'ID' should between 10 and 12.." })
-    @IsNotEmpty({ message: "'ID' can not be empty.." })
-    id: number
-    @IsInt({ message: "'Salary' must be written in integer format.." })
-    @IsNotEmpty({ message: "'Salary' can not be submitted as empty.." })
-    salary: number
+
+
+export class CreateOrdDto {
+    @IsNotEmpty()
+    name: string;
+}
+
+export class ItemsPricesDto {
+    @IsNotEmpty()
+    items_id: string;
+
+    @IsNotEmpty()
+    items_quantity: number;
+
+    @IsNotEmpty()
+    items_price: number;
+
+   // orderlistid:number;
+
+}
+
+export class BillsDto {
+    @IsNotEmpty()
+    total_price_of_items: number;
+
+    @IsNotEmpty()
+    total_price_including_tax: number;
+}
+
+export class TransactionsDto {
+    @IsNotEmpty()
+    transaction_method: string;
+
+    @IsNotEmpty()
+    transaction_date: string;
+
+    @IsNotEmpty()
+    transaction_status: string;
 }

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
-import { CreateAccDto, UpdateAccDto } from "./accounts.dto";
+import { CreateAccDto,CreateOrdDto,ItemsPricesDto,BillsDto,TransactionsDto } from "./accounts.dto";
 import { AccountsService } from "./accounts.service";
 import { AccDataUpdate } from "./accupdate.dto";
 
@@ -39,6 +39,36 @@ export class AccountsController {
     deleteAccbyid(@Param('id', ParseIntPipe) id: number): any {
         return this.accountsService.deleteAccbyid(id);
 
+    }
+    @Post("/createord")
+    @UsePipes(new ValidationPipe())
+    createOrd(@Body() createord: CreateOrdDto): any {
+        return this.accountsService.createOrd(createord);
+    }
+    @Get('/findord')
+    getOrd(): any {
+        return this.accountsService.getAllOrds();
+    }
+
+
+    @Post("/createorditemprice")
+    @UsePipes(new ValidationPipe())
+    createItemsPrice(@Body() ipdto: ItemsPricesDto): any {
+        return this.accountsService.createItemsPrice(ipdto);
+    }
+
+
+    @Post("/create")
+    @UsePipes(new ValidationPipe())
+    createBills(@Body() bdto: BillsDto): any {
+        return this.accountsService.createBills(bdto);
+    }
+
+
+    @Post("/createord")
+    @UsePipes(new ValidationPipe())
+    createTransactions(@Body() trandto: TransactionsDto): any {
+        return this.accountsService.createTransactions(trandto);
     }
 
 
