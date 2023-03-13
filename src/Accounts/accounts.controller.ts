@@ -1,43 +1,45 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
-import { CreateAccDto } from "./accounts.dto";
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, UsePipes, ValidationPipe } from "@nestjs/common";
+import { CreateAccDto, UpdateAccDto } from "./accounts.dto";
 import { AccountsService } from "./accounts.service";
+import { AccDataUpdate } from "./accupdate.dto";
 
 @Controller("/accounts")
 export class AccountsController {
     constructor(private accountsService: AccountsService) { }
 
-    @Get("/index")
-    getAcc(): any {
-        return "Accounts dashboard";
+
+
+    @Post("/createacc")
+    @UsePipes(new ValidationPipe())
+    createAcc(@Body() createacc: CreateAccDto): any {
+        return this.accountsService.createACC(createacc);
     }
 
-    @Post()
-    create(@Body() createaccDto: CreateAccDto) {
-        return 'This action adds a new employer account.';
+
+
+    @Get('/index')
+    getAdmin(): any {
+        return this.accountsService.getAllAccounts();
     }
 
-    @Get("/index/showemployersacc")
-    findAll(@Query() query: ListAllEmployers): any {
-        return `This action returns all employer's details.. (limit: ${query.limit} items)`;
+
+
+    @Put('/updateacc/:id')
+    @UsePipes(new ValidationPipe())
+    updateAccbyid(
+        @Body() mydto: AccDataUpdate,
+        @Param('id', ParseIntPipe) id: number,
+    ): any {
+        return this.accountsService.updateAccbyid(mydto, id);
     }
 
-    @Get("/index/findemployer")
-    getEmpAcc( @Query() myparams:any) : string {
-    return "The id is : " + myparams.id + " and his name is : " + myparams.name;
+
+    @Delete('/deleteacc/:id')
+    @UsePipes(new ValidationPipe())
+    deleteAccbyid(@Param('id', ParseIntPipe) id: number): any {
+        return this.accountsService.deleteAccbyid(id);
+
     }
 
-    @Put("index/updateemployeraccount")
-    updateempacc(
-
-        @Body("name") name: string,
-        @Body("id") id: string
-        ): any {
-        return "Employer's account updated named " + name + " with id " + id;
-    }
-
-    @Post('index/deleteemployer/:id')
-    remove(@Param('id') id: string): string {
-        return "This action removes a "+id.empacc+" emoployer's account.";
-    }
 
 }
