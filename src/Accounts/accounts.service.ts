@@ -1,20 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ACCEntity } from "./accentity.entity";
 import { OrderEntity } from "./orderentity.entity";
-import { CreateAccDto,CreateOrdDto,ItemsPricesDto,BillsDto,TransactionsDto } from "./accounts.dto";
-import { AccDataUpdate } from "./accupdate.dto";
+import { CreateOrdDto,ItemsPricesDto,BillsDto,TransactionsDto } from "./accounts.dto";
+import { AccDataUpdate,OrdUpdate,ItemsUpdate, billsUpdate,transUpdate } from "./accupdate.dto";
 import { TransactionEntity } from "./transactionentity.entity";
 import { BillsEntity } from "./billentity.entity";
 import { ItemPriceEntity } from "./itempriceentity.entity";
+import { AccountantEntity } from "./accountantentity.entity";
+import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
 export class AccountsService {
     constructor(
-        @InjectRepository(ACCEntity)
-        private accRepo: Repository<ACCEntity>,
         @InjectRepository(OrderEntity)
         private ordRepo: Repository<OrderEntity>,
         @InjectRepository(TransactionEntity)
@@ -22,38 +21,18 @@ export class AccountsService {
         @InjectRepository(BillsEntity)
         private billsRepo: Repository<BillsEntity>,
         @InjectRepository(ItemPriceEntity)
-        private itemsRepo: Repository<ItemPriceEntity>
+        private itemsRepo: Repository<ItemPriceEntity>,
+        @InjectRepository(AccountantEntity)
+        private adminRepo: Repository<AccountantEntity>
     ) { }
 
 
 
-    createACC(createacc: CreateAccDto): any {
-        const newaccount = new ACCEntity()
-        newaccount.name = createacc.name;
-        newaccount.email = createacc.email;
-        newaccount.position = createacc.position;
-        newaccount.joining_date = createacc.joining_date;
-        newaccount.address = createacc.address;
-        return this.accRepo.save(newaccount);
-    }
+   
 
-    getAllAccounts(): any {
-        return this.accRepo.find();
-    }
+    /*#################------------------for ordered custormers-----------------##############*/
 
-
-    updateAccbyid(updatedto: AccDataUpdate, id): any {
-        return this.accRepo.update(id, updatedto);
-    }
-
-
-    deleteAccbyid(id): any {
-        return this.accRepo.delete(id);
-    }
-
-
-
-
+    
     createOrd(createOrd: CreateOrdDto): any {
         const neword = new OrderEntity()
         neword.name = createOrd.name;
@@ -64,31 +43,120 @@ export class AccountsService {
         return this.ordRepo.find();
     }
 
-    /*createItemsPrice(createItems: ItemsPricesDto): any {
-        const newitems = new ItemPriceEntity()
-        newitems.items_id = createItems.items_id;
-        newitems.items_quantity = createItems.items_quantity;
-        newitems.items_price = createItems.items_price;
-        return this.itemsRepo.save(newitems);
-    }*/
+    updateOrdbyid(orddto: OrdUpdate, id): any {
+        return this.ordRepo.update(id, orddto);
+    }
+
+    deleteOrdbyid(id): any {
+        return this.ordRepo.delete(id);
+    }
+
+    /*################--------------for item prices-------------##################*/
+
     createItemsPrice(createItems: ItemsPricesDto): any {
         return this.itemsRepo.save(createItems);
     }
 
+    getallordereditempricelist(): any {
+        return this.itemsRepo.find();
+    }
 
+    updateOrditemsbyid(itemsdto: ItemsUpdate, id): any {
+        return this.itemsRepo.update(id, itemsdto);
+    }
 
+    deleteOrditemsbyid(id): any {
+        return this.itemsRepo.delete(id);
+    }
+
+    
+    /*###################------------------for bills------------------######################*/
 
     createBills(createBills: BillsDto): any {
-        const newbills = new BillsEntity()
-        newbills.total_price_of_items = createBills.total_price_of_items;
-        newbills.total_price_including_tax = createBills.total_price_including_tax;
-        return this.billsRepo.save(newbills);
+        return this.billsRepo.save(createBills);
     }
+
+    allbillslist(): any {
+        return this.billsRepo.find();
+    }
+
+    updatebills(billsdto: billsUpdate, id): any {
+        return this.billsRepo.update(id, billsdto);
+    }
+
+    deletebills(id): any {
+        return this.billsRepo.delete(id);
+    }
+    
+    /*###################----------------------for transaction---------------------##############*/
+
     createTransactions(createTransactions: TransactionsDto): any {
-        const newtransaction = new TransactionEntity()
-        newtransaction.transaction_method = createTransactions.transaction_method;
-        newtransaction.transaction_date = createTransactions.transaction_date;
-        newtransaction.transaction_status = createTransactions.transaction_status;
-        return this.transactionRepo.save(newtransaction);
+        return this.transactionRepo.save(createTransactions);
     }
+
+    alltransactionslist(): any {
+        return this.transactionRepo.find();
+    }
+
+    updatetransactions(transdto: transUpdate, id): any {
+        return this.transactionRepo.update(id, transdto);
+    }
+
+    deletetransactions(id): any {
+        return this.transactionRepo.delete(id);
+    }
+
+    /*##################-------------------others----------------##################*/
+
+    getitempricebyorderedID(id):any {
+        return this.ordRepo.find({ 
+                where: {id:id},
+            relations: {
+                itemprice: true,
+            },
+         });
+    }
+
+    getbillsbyorderedID(id):any {
+        return this.ordRepo.find({ 
+                where: {id:id},
+            relations: {
+                bills: true,
+            },
+         });
+    }
+
+    gettransactionsbyorderedID(id):any {
+        return this.ordRepo.find({ 
+                where: {id:id},
+            relations: {
+                transaction: true,
+            },
+         });
+    }
+
+    /*##################---------------------signup-----------------######################*/
+
+    async signup(mydto) {
+        const salt = await bcrypt.genSalt();
+        const hassedpassed = await bcrypt.hash(mydto.password, salt);
+        mydto.password= hassedpassed;
+        return this.adminRepo.save(mydto);
+        }
+
+
+    /*##################---------------------signin-----------------######################*/
+
+    async signin(mydto){
+    console.log(mydto.password);
+    const mydata= await this.adminRepo.findOneBy({email: mydto.email});
+    const isMatch= await bcrypt.compare(mydto.password, mydata.password);
+    if(isMatch) {
+        return (message=> "You've logged in successfully..");
+    }
+    else {
+        return (message=> "Invalid credentials");
+    }
+    
+    }  
 }

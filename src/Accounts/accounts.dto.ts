@@ -1,63 +1,40 @@
-import { IsEmail, IsNotEmpty, IsInt, Length, IsString, MinLength, MaxLength} from 'class-validator';
-export class CreateAccDto {
-    /*@Length(10, 12, {message:"Length of 'ID' should between 10 and 12.."})
-    @IsNotEmpty({message:"'ID' can not be empty.."})
-    id: number;
-
-    @MinLength(4,{ message: "'Name' size must be greater than 3.." })
-    @MaxLength(30, {message: "'Name' size must be lower 31.."})
-    @IsString({message:"'Name' must be written in string format.."})
-    @IsNotEmpty({ message: "'Name' can not be submitted as empty.." })
-    name: string;
-
-    @IsInt({message:"'Salary' must be written in integer format.."})
-    @IsNotEmpty({message:"'Salary' can not be submitted as empty.."})
-    salary: number;
-    @IsEmail()
-    @IsNotEmpty({ message: "'Email' can not be submitted as empty.." })
-    email: string;*/
-    @IsNotEmpty()
-    name: string;
-
-    @IsEmail()
-    email: string;
-
-    @IsNotEmpty()
-    position: string;
-
-    @IsNotEmpty()
-    joining_date: string;
-
-    @IsNotEmpty()
-    address: string;
-}
-
+import { IsEmail, IsNotEmpty, IsInt, Length,IsDate, IsString, MinLength, MaxLength} from 'class-validator';
 
 export class CreateOrdDto {
     @IsNotEmpty()
+    @MinLength(4,{ message: "'Name' size must be greater than 3.." })
+    @MaxLength(30, {message: "'Name' size must be lower 30.."})
     name: string;
 }
 
 export class ItemsPricesDto {
     @IsNotEmpty()
+    @MinLength(3,{ message: "'Id' size must be greater than 3.." })
+    @MaxLength(15, {message: "'Id' size must be lower 15.."})
     items_id: string;
 
     @IsNotEmpty()
+    @IsInt()
     items_quantity: number;
 
     @IsNotEmpty()
+    @IsInt()
     items_price: number;
 
-   // orderlistid:number;
+    orderlistid:number;
 
 }
 
 export class BillsDto {
     @IsNotEmpty()
+    @IsInt()
     total_price_of_items: number;
 
     @IsNotEmpty()
+    @IsInt()
     total_price_including_tax: number;
+
+    orderlistid:number;
 }
 
 export class TransactionsDto {
@@ -70,3 +47,24 @@ export class TransactionsDto {
     @IsNotEmpty()
     transaction_status: string;
 }
+
+export class AccountantForm {   
+   
+
+    @IsNotEmpty()
+     name: string;
+    
+    @IsEmail() 
+     email: string;
+ 
+    @Length(8,16)
+    password: string;
+ 
+    @IsNotEmpty()
+    address: string;
+
+    @IsNotEmpty()
+    filename:string;
+ 
+ 
+ }

@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { OrderEntity } from './orderentity.entity';
 
 @Entity("transaction")
 export class TransactionEntity {
@@ -13,4 +14,8 @@ export class TransactionEntity {
 
     @Column()
     transaction_status: string;
+
+    @OneToOne(() => OrderEntity,orderlist=>orderlist.transaction, {onDelete: 'CASCADE'})
+    @JoinColumn()
+    orderlist : OrderEntity
 }

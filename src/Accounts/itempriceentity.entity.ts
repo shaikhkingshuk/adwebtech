@@ -15,6 +15,6 @@ export class ItemPriceEntity {
     @Column()
     items_price: number;
 
-    @ManyToOne(() => OrderEntity, orderlist => orderlist.itemprice)
+    @ManyToOne(() => OrderEntity, orderlist => orderlist.itemprice,{onDelete: 'CASCADE'})
     orderlist : OrderEntity
 }
